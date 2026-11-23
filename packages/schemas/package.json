@@ -17,7 +17,6 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
-    "@repo/db": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@vitest/coverage-v8": "^5.1.1",

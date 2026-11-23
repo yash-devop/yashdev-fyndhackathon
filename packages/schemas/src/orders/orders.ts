@@ -1,5 +1,14 @@
 import { z } from "zod";
-import { Prisma } from "@repo/db";
+
+export const ORDER_STATUSES = [
+  "PLACED",
+  "PACKED",
+  "SHIPPED",
+  "CANCELLED",
+] as const;
+
+export type OrderStatus = (typeof ORDER_STATUSES)[number];
+
 export const createOrderSchema = z
   .object({
     items: z
@@ -28,7 +37,7 @@ export const getOrdersSchema = z.object({
   page: z.coerce.number().min(1).default(1),
   limit: z.coerce.number().min(1).max(100).default(10),
   search: z.string().min(1).optional(),
-  status: z.enum(Prisma.OrderStatus).optional(),
+  status: z.enum(ORDER_STATUSES).optional(),
 });
 
 export const orderIdParamSchema = z.object({
@@ -37,7 +46,7 @@ export const orderIdParamSchema = z.object({
 
 export const updateOrderStatusSchema = z
   .object({
-    status: z.enum(Prisma.OrderStatus),
+    status: z.enum(ORDER_STATUSES),
   })
   .strict();
 
