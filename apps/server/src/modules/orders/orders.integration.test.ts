@@ -62,15 +62,19 @@ describe("orders service integration", () => {
     expect(updatedB.stock).toBe(4);
   });
 
-  it("rejects an order with insufficient stock and leaves no order or stock changes", async () => {
+  it("rolls back stock when only one product in a multi-product order has insufficient stock", async () => {
     await expect(
       ordersService.createOrder({
-        items: [{ productId: productAId, quantity: 11 }],
+        items: [
+          { productId: productAId, quantity: 2 },
+          { productId: productBId, quantity: 6 },
+        ],
       }),
     ).rejects.toMatchObject({
       status: 409,
       code: "CONFLICT",
       message: expect.stringContaining("Insufficient stock"),
+      meta: expect.objectContaining({ productId: productBId }),
     });
 
     expect(await prisma.order.count()).toBe(0);
