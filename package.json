@@ -9,6 +9,7 @@
     "test": "turbo run test",
     "check-types": "turbo run check-types",
     "compose:up": "docker compose --env-file .env.local up -d",
+    "compose:test:up": "docker compose --env-file .env.local up -d test-postgres",
     "compose:down": "docker compose down",
     "prisma:generate": "cross-env NODE_ENV=development pnpm --filter @repo/db exec prisma generate --config=prisma7.config.ts",
     "prisma:format": "cross-env NODE_ENV=development pnpm --filter @repo/db exec prisma format --config=prisma7.config.ts",

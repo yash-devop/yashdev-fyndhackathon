@@ -13,5 +13,16 @@ services:
     volumes:
       - yash_fynd_hackthon_postgres_data:/var/lib/postgresql/data
 
+  test-postgres:
+    image: postgres:17
+    container_name: yash-test-postgres
+    restart: unless-stopped
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=yash-fynd-test
+
 volumes:
   yash_fynd_hackthon_postgres_data:
