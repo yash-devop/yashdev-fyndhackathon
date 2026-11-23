@@ -12,15 +12,6 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
     volumes:
       - yash_fynd_hackthon_postgres_data:/var/lib/postgresql/data
-  redis:
-    image: redis:8.10-alpine
-    container_name: yash-fynd-redis
-    restart: always
-    ports:
-      - 6379:6379
-    volumes:
-      - redis-data:/data
 
 volumes:
   yash_fynd_hackthon_postgres_data:
-  redis-data:

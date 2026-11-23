@@ -1,4 +1,3 @@
-import { AuthStatus } from "@/components/auth-status";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Home() {
@@ -9,10 +8,9 @@ export default function Home() {
       </div>
       <h1 className="text-4xl font-semibold tracking-tight">yash-fynd</h1>
       <p className="text-muted-foreground max-w-md text-center text-balance">
-        Monorepo starter with Next.js, Express, BullMQ, Prisma and a shared UI
-        package. Start building here.
+        Monorepo starter with Next.js, Express, Prisma and a shared UI package.
+        Start building here.
       </p>
-      <AuthStatus />
     </main>
   );
 }

@@ -1,6 +1,6 @@
 # yash-fynd
 
-A Turborepo monorepo starter built with Next.js, Express, BullMQ, Prisma and a
+A Turborepo monorepo starter built with Next.js, Express, Prisma and a
 shared UI package. Use this as the foundation for new features.
 
 ## What's inside?
@@ -8,15 +8,13 @@ shared UI package. Use this as the foundation for new features.
 ### Apps
 
 - `web` — [Next.js](https://nextjs.org/) frontend (App Router, Tailwind, theming)
-- `server` — [Express](https://expressjs.com/) API with Better Auth, Prisma and
-  shared middleware (auth, validation, errors)
-- `worker` — [BullMQ](https://docs.bullmq.io/) background job worker backed by
-  Redis
+- `server` — [Express](https://expressjs.com/) API with Prisma and shared
+  middleware (validation, errors)
 
 ### Packages
 
 - `@repo/db` — Prisma client and schema
-- `@repo/env` — typed environment variables (server + worker)
+- `@repo/env` — typed environment variables
 - `@repo/schemas` — shared Zod schemas
 - `@repo/ui` — shared React component library (Tailwind + Base UI)
 - `@repo/eslint-config` — shared ESLint configs
@@ -26,13 +24,13 @@ shared UI package. Use this as the foundation for new features.
 
 ```sh
 pnpm install
-pnpm compose:up      # start Postgres + Redis
+pnpm compose:up      # start Postgres
 pnpm prisma:dev      # push the schema to the database
 pnpm dev             # run all apps with Turbo
 ```
 
 Copy `.env.local` values from your local environment file before running the
-apps. The `server` and `worker` validate their environment on boot.
+apps. The `server` validates its environment on boot.
 
 ### Useful scripts
 
@@ -50,7 +48,5 @@ apps. The `server` and `worker` validate their environment on boot.
 
 - Add an API module under `apps/server/src/modules/<name>` and mount it in
   `apps/server/src/modules/version.route.ts`.
-- Add a job processor under `apps/worker/src/processors` and register it in
-  `apps/worker/src/index.ts`.
 - Add shared Zod schemas to `packages/schemas/src`.
 - Add shared components to `packages/ui/src/components`.
