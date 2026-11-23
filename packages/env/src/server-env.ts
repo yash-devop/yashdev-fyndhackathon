@@ -1,0 +1,25 @@
+import { config } from "dotenv";
+import { z } from "zod";
+import { resolveEnvFile } from "./resolve-env-file";
+
+config({ path: await resolveEnvFile() });
+const serverEnvSchema = z.object({
+  NODE_ENV: z
+    .enum(["development", "test", "production"])
+    .default("development"),
+  PORT: z.coerce.number().int().positive().default(8000),
+  POSTGRES_USER: z.string().min(1),
+  POSTGRES_PASSWORD: z.string().min(1),
+  POSTGRES_DB: z.string().min(1),
+  DATABASE_URL: z.string().url(),
+  NEXT_PUBLIC_FRONTEND_URL: z.string().url(),
+  BETTER_AUTH_URL: z.string().url(),
+  BETTER_AUTH_SECRET: z.string().min(32),
+  GOOGLE_CLIENT_ID: z.string().min(1),
+  GOOGLE_API_KEY: z.string().min(1),
+  REDIS_URL: z.string().min(1).default("redis://localhost:6379"),
+  // GITHUB_CLIENT_ID: z.string().min(1),
+  // GITHUB_API_KEY: z.stringx().min(1),
+});
+
+export const serverEnv = serverEnvSchema.parse(process.env);

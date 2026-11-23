@@ -1,0 +1,41 @@
+import type { Metadata } from "next";
+import { Inter, Geist_Mono } from "next/font/google";
+import { ThemeProvider } from "@/components/theme-provider";
+import "./globals.css";
+
+const interSans = Inter({
+  variable: "--font-inter",
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  subsets: ["latin"],
+});
+const interMono = Geist_Mono({
+  variable: "--font-inter-mono",
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "yash-fynd",
+  description: "yash-fynd monorepo starter",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${interSans.variable} ${interMono.variable}`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}

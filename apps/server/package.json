@@ -1,0 +1,38 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development tsup --watch --onSuccess \"node dist/index.js\"",
+    "start": "cross-env NODE_ENV=production node dist/index.js",
+    "build": "tsup",
+    "check-types": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@repo/db": "workspace:^",
+    "@repo/env": "workspace:^",
+    "@repo/schemas": "workspace:^",
+    "better-auth": "^1.7.18",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.9",
+    "express": "^5.3.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "26.4.1",
+    "cross-env": "^10.1.0",
+    "tsup": "^9.0.0",
+    "typescript": "7.0.2"
+  }
+}
