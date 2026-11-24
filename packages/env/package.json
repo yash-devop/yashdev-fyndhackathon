@@ -6,7 +6,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./resolve-env-file": "./src/resolve-env-file.ts",
-    "./server-env": "./src/server-env.ts"
+    "./server-env": "./src/server-env.ts",
+    "./client-env": "./src/client-env.ts"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",

@@ -13,6 +13,7 @@ const serverEnvSchema = z.object({
   POSTGRES_DB: z.string().min(1),
   DATABASE_URL: z.string().url(),
   NEXT_PUBLIC_FRONTEND_URL: z.string().url(),
+  NEXT_PUBLIC_BACKEND_URL: z.string().url(),
 });
 
 export const serverEnv = serverEnvSchema.parse(process.env);
