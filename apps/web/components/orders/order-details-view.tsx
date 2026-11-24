@@ -21,6 +21,7 @@ import {
 } from "@repo/ui/dialog";
 import { RecordTable, RecordTableRow } from "@repo/ui/record-table";
 import { useState } from "react";
+import { NoResultsIllustration } from "@/components/common/no-results-illustration";
 import { OrderStatusBadge } from "@/components/common/order-status-badge";
 import { PageHeader } from "@/components/common/page-header";
 import { StatePanel } from "@/components/common/state-panel";
@@ -62,7 +63,7 @@ export function OrderDetailsView({ id }: { id: string }) {
   if (isError || !order) {
     return (
       <StatePanel
-        icon={<IconAlertCircle className="size-6" />}
+        illustration={<NoResultsIllustration />}
         title={notFound ? "Order not found" : "Couldn't load order"}
         description={
           notFound
@@ -163,7 +164,7 @@ export function OrderDetailsView({ id }: { id: string }) {
 
       <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_18rem]">
         <section className="min-w-0">
-          <h2 className="border-b pb-2 text-sm font-medium">Purchased items</h2>
+          <h2 className="pb-2 text-sm font-medium">Purchased items</h2>
           <RecordTable grid={grid} columns={columns} className="mt-4">
             {order.items.map((item) => (
               <RecordTableRow key={item.id}>

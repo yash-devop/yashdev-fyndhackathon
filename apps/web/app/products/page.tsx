@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  IconAlertCircle,
-  IconPackage,
-  IconPlus,
-  IconSearch,
-} from "@tabler/icons-react";
+import { IconPlus, IconSearch } from "@tabler/icons-react";
 import { Button } from "@repo/ui/button";
 import { Input } from "@repo/ui/input";
 import {
@@ -17,6 +12,7 @@ import {
 } from "@repo/ui/select";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { NoResultsIllustration } from "@/components/common/no-results-illustration";
 import { PageHeader } from "@/components/common/page-header";
 import { StatePanel } from "@/components/common/state-panel";
 import {
@@ -96,7 +92,7 @@ export default function ProductsPage() {
         <ProductListSkeleton />
       ) : isError ? (
         <StatePanel
-          icon={<IconAlertCircle className="size-6" />}
+          illustration={<NoResultsIllustration />}
           title="Couldn't load products"
           description="The catalogue is unavailable right now. Try again."
           action={
@@ -107,7 +103,7 @@ export default function ProductsPage() {
         />
       ) : visibleProducts.length === 0 ? (
         <StatePanel
-          icon={<IconPackage className="size-6" />}
+          illustration={<NoResultsIllustration />}
           title="No products found"
           description="Try a different search term or availability filter."
         />

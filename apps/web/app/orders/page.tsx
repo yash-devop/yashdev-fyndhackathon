@@ -1,11 +1,9 @@
 "use client";
 
 import {
-  IconAlertCircle,
   IconArrowUpRight,
   IconChevronLeft,
   IconChevronRight,
-  IconClipboardList,
   IconDotsVertical,
   IconReceipt,
   IconSearch,
@@ -30,6 +28,7 @@ import {
 import { Skeleton } from "@repo/ui/skeleton";
 import Link from "next/link";
 import { useState } from "react";
+import { NoResultsIllustration } from "@/components/common/no-results-illustration";
 import { OrderStatusBadge } from "@/components/common/order-status-badge";
 import { PageHeader } from "@/components/common/page-header";
 import { StatePanel } from "@/components/common/state-panel";
@@ -131,7 +130,7 @@ export default function OrdersPage() {
         </RecordTable>
       ) : isError ? (
         <StatePanel
-          icon={<IconAlertCircle className="size-6" />}
+          illustration={<NoResultsIllustration />}
           title="Couldn't load orders"
           description="Orders are unavailable right now. Try again."
           action={
@@ -142,7 +141,7 @@ export default function OrdersPage() {
         />
       ) : !data || data.items.length === 0 ? (
         <StatePanel
-          icon={<IconClipboardList className="size-6" />}
+          illustration={<NoResultsIllustration />}
           title="No orders found"
           description="Place an order or adjust the search and status filters."
           action={
