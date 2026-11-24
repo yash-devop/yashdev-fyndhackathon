@@ -2,7 +2,11 @@
 
 import {
   IconAlertCircle,
+  IconArrowLeft,
+  IconArrowRight,
   IconDotsVertical,
+  IconInfoCircle,
+  IconLoader2,
   IconMinus,
   IconPackage,
   IconPlus,
@@ -29,6 +33,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useFieldArray } from "react-hook-form";
+import { NoResultsIllustration } from "@/components/common/no-results-illustration";
 import { PageHeader } from "@/components/common/page-header";
 import { StatePanel } from "@/components/common/state-panel";
 import { useOrderForm } from "@/hooks/use-order-form";
@@ -36,7 +41,7 @@ import { useProducts } from "@/hooks/use-products";
 import { formatCurrency } from "@/lib/format-currency";
 
 const grid =
-  "md:grid-cols-[minmax(0,1.6fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,0.9fr)_2.5rem]";
+  "md:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)_minmax(0,0.7fr)_minmax(0,0.9fr)_2.5rem]";
 
 const columns = [
   { key: "product", header: "Product" },
@@ -45,6 +50,22 @@ const columns = [
   { key: "subtotal", header: "Subtotal" },
   { key: "actions", header: "Actions", className: "sr-only" },
 ];
+
+function CreateOrderPageSkeleton() {
+  return (
+    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem] xl:items-start">
+      <div className="min-w-0">
+        <div className="mb-4 flex flex-wrap items-center gap-3">
+          <Skeleton className="h-8 w-full max-w-sm rounded-lg" />
+          <Skeleton className="h-8 w-20 rounded-lg" />
+          <Skeleton className="h-8 w-24 rounded-lg" />
+        </div>
+        <Skeleton className="h-72 w-full rounded-2xl" />
+      </div>
+      <Skeleton className="h-56 w-full rounded-2xl" />
+    </div>
+  );
+}
 
 export function CreateOrderPage() {
   const searchParams = useSearchParams();
@@ -68,6 +89,7 @@ export function CreateOrderPage() {
     () => new Map((products ?? []).map((product) => [product.id, product])),
     [products],
   );
+  const selectedProduct = productId ? productsById.get(productId) : undefined;
   const selectedIds = useMemo(
     () => new Set(fields.map((item) => item.productId)),
     [fields],
@@ -87,11 +109,24 @@ export function CreateOrderPage() {
       }, 0),
     [fields, productsById],
   );
+  const units = useMemo(
+    () => fields.reduce((sum, item) => sum + item.quantity, 0),
+    [fields],
+  );
 
   const itemsErrorMessage =
     typeof form.formState.errors.items?.message === "string"
       ? form.formState.errors.items.message
       : undefined;
+
+  const availabilityLabel =
+    availableProducts.length === 0
+      ? fields.length > 0
+        ? "All available products are in this order"
+        : "No products in stock"
+      : `${availableProducts.length} ${
+          availableProducts.length === 1 ? "product" : "products"
+        } available`;
 
   const handleAddItem = () => {
     const product = productsById.get(productId);
@@ -117,6 +152,7 @@ export function CreateOrderPage() {
     setFeedback(null);
     setProductId("");
     setQuantity(1);
+    document.getElementById("product-selector")?.focus();
   };
 
   const handleQuantityChange = (index: number, next: number) => {
@@ -139,20 +175,22 @@ export function CreateOrderPage() {
         title="Create Order"
         description="Build an order from the current catalogue."
         actions={
-          <Button variant="outline" render={<Link href="/products" />}>
+          <Button
+            variant="outline"
+            nativeButton={false}
+            render={<Link href="/products" />}
+          >
+            <IconArrowLeft />
             Back to products
           </Button>
         }
       />
 
       {isPending ? (
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-          <Skeleton className="h-80 w-full" />
-          <Skeleton className="h-56 w-full" />
-        </div>
+        <CreateOrderPageSkeleton />
       ) : isError ? (
         <StatePanel
-          icon={<IconAlertCircle className="size-6" />}
+          illustration={<NoResultsIllustration />}
           title="Couldn't load products"
           description="Products are needed to build an order. Try again."
           action={
@@ -164,77 +202,90 @@ export function CreateOrderPage() {
       ) : (
         <form
           onSubmit={onSubmit}
-          className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]"
+          className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem] xl:items-start"
         >
-          <section className="min-w-0 space-y-4">
-            <div>
-              <h2 className="border-b pb-2 text-sm font-medium">Add items</h2>
-              <div className="mt-4 flex flex-wrap items-end gap-2">
-                <div className="min-w-56 flex-1 space-y-1.5">
-                  <label
-                    htmlFor="product-selector"
-                    className="text-muted-foreground text-xs"
-                  >
-                    Product
-                  </label>
-                  <Select
-                    value={productId}
-                    onValueChange={(value) => {
-                      setProductId(value ?? "");
-                      setFeedback(null);
-                    }}
-                  >
-                    <SelectTrigger id="product-selector" className="w-full">
-                      <SelectValue placeholder="Select a product" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableProducts.map((product) => (
-                        <SelectItem key={product.id} value={product.id}>
-                          {product.name} · {product.stock} available
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="w-24 space-y-1.5">
-                  <label
-                    htmlFor="item-quantity"
-                    className="text-muted-foreground text-xs"
-                  >
-                    Quantity
-                  </label>
-                  <Input
-                    id="item-quantity"
-                    type="number"
-                    min={1}
-                    value={quantity}
-                    onChange={(event) =>
-                      setQuantity(Number(event.target.value))
-                    }
-                  />
-                </div>
-                <Button
-                  type="button"
-                  onClick={handleAddItem}
-                  disabled={availableProducts.length === 0}
+          <section className="min-w-0" aria-label="Order items">
+            <div
+              className="mb-4 flex flex-wrap items-center gap-3"
+              onKeyDown={(event) => {
+                if (
+                  event.key === "Enter" &&
+                  event.target instanceof HTMLInputElement
+                ) {
+                  event.preventDefault();
+                  handleAddItem();
+                }
+              }}
+            >
+              <div className="w-full max-w-sm">
+                <Select
+                  value={productId}
+                  onValueChange={(value) => {
+                    setProductId(value ?? "");
+                    setFeedback(null);
+                  }}
                 >
-                  <IconPlus />
-                  Add item
-                </Button>
+                  <SelectTrigger
+                    id="product-selector"
+                    aria-label="Product"
+                    className="w-full"
+                  >
+                    <SelectValue placeholder="Select a product" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableProducts.map((product) => (
+                      <SelectItem key={product.id} value={product.id}>
+                        {product.name} · {product.stock} available
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-              {feedback ? (
-                <p role="alert" className="text-destructive mt-2 text-xs">
-                  {feedback}
-                </p>
-              ) : null}
+              <Input
+                id="item-quantity"
+                type="number"
+                inputMode="numeric"
+                min={1}
+                max={selectedProduct?.stock}
+                value={quantity}
+                aria-label="Quantity"
+                onChange={(event) => {
+                  setQuantity(Number(event.target.value));
+                  setFeedback(null);
+                }}
+                className="w-20 text-center tabular-nums"
+              />
+              <Button
+                type="button"
+                onClick={handleAddItem}
+                disabled={!productId || availableProducts.length === 0}
+              >
+                <IconPlus />
+                Add item
+              </Button>
+              <span className="text-muted-foreground ml-auto text-xs tabular-nums">
+                {availabilityLabel}
+              </span>
             </div>
 
+            {feedback ? (
+              <p
+                role="alert"
+                className="text-destructive mb-4 flex items-center gap-1.5 text-xs"
+              >
+                <IconAlertCircle className="size-3.5 shrink-0" />
+                {feedback}
+              </p>
+            ) : null}
+
             {fields.length === 0 ? (
-              <StatePanel
-                icon={<IconPackage className="size-6" />}
-                title="No items selected"
-                description="Choose a product and quantity above to start this order."
-              />
+              <div className="rounded-[calc(var(--radius-xl)+var(--spacing))] border border-border/60 bg-card shadow-xs">
+                <StatePanel
+                  illustration={<NoResultsIllustration />}
+                  title="No items selected"
+                  description="Choose a product and quantity above to start this order."
+                />
+              </div>
             ) : (
               <RecordTable grid={grid} columns={columns}>
                 {fields.map((item, index) => {
@@ -249,7 +300,7 @@ export function CreateOrderPage() {
                         role="cell"
                         className="flex min-w-0 items-center gap-3 pr-9 md:pr-0"
                       >
-                        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-border/60 bg-muted/40 text-muted-foreground">
+                        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-border/60 bg-muted text-muted-foreground">
                           <IconPackage
                             className="size-5"
                             stroke={1.75}
@@ -257,19 +308,21 @@ export function CreateOrderPage() {
                           />
                         </span>
                         <div className="min-w-0">
-                          <p className="text-foreground truncate font-medium">
+                          <p className="text-foreground truncate text-sm font-medium">
                             {product?.name ?? "Unknown product"}
                           </p>
                           <p
                             className={
                               exceeded
-                                ? "text-destructive truncate text-sm"
-                                : "text-muted-foreground truncate text-sm"
+                                ? "text-destructive truncate text-xs"
+                                : "text-muted-foreground truncate text-xs"
                             }
                           >
                             {exceeded
                               ? `Only ${product?.stock} available`
-                              : "In this order"}
+                              : product
+                                ? `${product.stock} in stock`
+                                : "Not in catalogue"}
                           </p>
                         </div>
                       </div>
@@ -280,21 +333,22 @@ export function CreateOrderPage() {
                           className="flex items-center justify-between gap-2 md:block"
                         >
                           <span className="text-muted-foreground text-sm md:hidden">
-                            Quantity
+                            Qty
                           </span>
-                          <div className="flex items-center gap-1">
+                          <div className="inline-flex items-center rounded-lg border border-border/60 bg-muted/30 p-0.5">
                             <Button
                               type="button"
                               variant="ghost"
                               size="icon-xs"
                               aria-label={`Decrease quantity of ${product?.name}`}
+                              disabled={item.quantity <= 1}
                               onClick={() =>
                                 handleQuantityChange(index, item.quantity - 1)
                               }
                             >
                               <IconMinus />
                             </Button>
-                            <span className="w-6 text-center text-sm tabular-nums">
+                            <span className="w-7 text-center text-sm tabular-nums">
                               {item.quantity}
                             </span>
                             <Button
@@ -302,6 +356,9 @@ export function CreateOrderPage() {
                               variant="ghost"
                               size="icon-xs"
                               aria-label={`Increase quantity of ${product?.name}`}
+                              disabled={
+                                !product || item.quantity >= product.stock
+                              }
                               onClick={() =>
                                 handleQuantityChange(index, item.quantity + 1)
                               }
@@ -315,7 +372,7 @@ export function CreateOrderPage() {
                           className="flex items-baseline justify-between gap-2 text-sm md:block"
                         >
                           <span className="text-muted-foreground md:hidden">
-                            Unit price
+                            Price
                           </span>
                           <span className="tabular-nums">
                             {product ? formatCurrency(product.price) : "—"}
@@ -323,9 +380,9 @@ export function CreateOrderPage() {
                         </div>
                         <div
                           role="cell"
-                          className="col-span-2 flex items-baseline justify-between gap-2 text-sm md:col-span-1 md:block"
+                          className="col-span-2 flex items-baseline justify-between gap-2 text-sm font-medium md:col-span-1 md:block"
                         >
-                          <span className="text-muted-foreground md:hidden">
+                          <span className="text-muted-foreground font-normal md:hidden">
                             Subtotal
                           </span>
                           <span className="tabular-nums">
@@ -376,36 +433,65 @@ export function CreateOrderPage() {
             )}
           </section>
 
-          <aside className="lg:sticky lg:top-6 lg:self-start">
-            <div className="border-t pt-4">
-              <h2 className="text-sm font-medium">Order summary</h2>
-              <dl className="mt-4 space-y-3 text-sm">
-                <div className="flex items-center justify-between">
-                  <dt className="text-muted-foreground">Items</dt>
+          <aside className="xl:sticky xl:top-6" aria-label="Order summary">
+            <div className="overflow-hidden rounded-[calc(var(--radius-xl)+var(--spacing))] border border-border/60 bg-card shadow-xs">
+              <div className="border-b border-border/60 px-4 py-3">
+                <h2 className="text-sm font-medium">Order summary</h2>
+              </div>
+
+              <dl className="space-y-3 px-4 py-4 text-sm">
+                <div className="flex items-center justify-between gap-4">
+                  <dt className="text-muted-foreground">Line items</dt>
                   <dd className="tabular-nums">{fields.length}</dd>
                 </div>
-                <div className="flex items-center justify-between border-t pt-3">
+                <div className="flex items-center justify-between gap-4">
+                  <dt className="text-muted-foreground">Units</dt>
+                  <dd className="tabular-nums">{units}</dd>
+                </div>
+                <div className="flex items-baseline justify-between gap-4 border-t border-border/60 pt-3">
                   <dt className="font-medium">Total</dt>
-                  <dd className="font-semibold tabular-nums">
+                  <dd className="text-lg font-semibold tabular-nums">
                     {formatCurrency(total)}
                   </dd>
                 </div>
               </dl>
-              {itemsErrorMessage ? (
-                <p role="alert" className="text-destructive mt-3 text-xs">
-                  {itemsErrorMessage}
+
+              <div className="border-t border-border/60 bg-muted/20 px-4 py-4">
+                {itemsErrorMessage ? (
+                  <p
+                    role="alert"
+                    className="text-destructive mb-3 flex items-center gap-1.5 text-xs"
+                  >
+                    <IconAlertCircle className="size-3.5 shrink-0" />
+                    {itemsErrorMessage}
+                  </p>
+                ) : null}
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="w-full"
+                  disabled={isSubmitting || fields.length === 0}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <IconLoader2 className="animate-spin" />
+                      Placing order…
+                    </>
+                  ) : (
+                    <>
+                      Place order
+                      <IconArrowRight />
+                    </>
+                  )}
+                </Button>
+                <p className="text-muted-foreground mt-3 flex items-start gap-1 text-xs">
+                  <IconInfoCircle
+                    className="mt-px size-3.5 shrink-0"
+                    aria-hidden="true"
+                  />
+                  Stock is deducted when the order is placed.
                 </p>
-              ) : null}
-              <Button
-                type="submit"
-                className="mt-5 w-full"
-                disabled={isSubmitting || fields.length === 0}
-              >
-                {isSubmitting ? "Placing order…" : "Place order"}
-              </Button>
-              <p className="text-muted-foreground mt-3 text-xs">
-                Stock is deducted when the order is placed.
-              </p>
+              </div>
             </div>
           </aside>
         </form>
