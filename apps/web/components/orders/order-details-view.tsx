@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  IconAlertCircle,
   IconClipboardList,
   IconPackage,
   IconTruck,
@@ -162,7 +161,7 @@ export function OrderDetailsView({ id }: { id: string }) {
 
       <FulfilmentProgress status={order.status} />
 
-      <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_18rem]">
+      <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_19rem] xl:grid-cols-[minmax(0,1fr)_20rem]">
         <section className="min-w-0">
           <h2 className="pb-2 text-sm font-medium">Purchased items</h2>
           <RecordTable grid={grid} columns={columns} className="mt-4">
@@ -176,7 +175,7 @@ export function OrderDetailsView({ id }: { id: string }) {
                       aria-hidden="true"
                     />
                   </span>
-                  <p className="text-foreground truncate font-medium">
+                  <p className="text-foreground truncate font-medium text-sm">
                     {item.productName}
                   </p>
                 </div>
@@ -189,7 +188,9 @@ export function OrderDetailsView({ id }: { id: string }) {
                     <span className="text-muted-foreground md:hidden">
                       Quantity
                     </span>
-                    <span className="tabular-nums">{item.quantity}</span>
+                    <span className="tabular-nums text-sm">
+                      {item.quantity}
+                    </span>
                   </div>
                   <div
                     role="cell"
@@ -198,7 +199,7 @@ export function OrderDetailsView({ id }: { id: string }) {
                     <span className="text-muted-foreground md:hidden">
                       Unit price
                     </span>
-                    <span className="tabular-nums">
+                    <span className="tabular-nums text-sm">
                       {formatCurrency(item.priceAtPurchase)}
                     </span>
                   </div>
@@ -209,7 +210,7 @@ export function OrderDetailsView({ id }: { id: string }) {
                     <span className="text-muted-foreground md:hidden">
                       Subtotal
                     </span>
-                    <span className="tabular-nums">
+                    <span className="tabular-nums text-sm">
                       {formatCurrency(item.subtotal)}
                     </span>
                   </div>
@@ -233,49 +234,51 @@ export function OrderDetailsView({ id }: { id: string }) {
           </RecordTable>
         </section>
 
-        <aside className="space-y-6">
-          <section>
-            <h2 className="border-b pb-2 text-sm font-medium">
-              Order information
-            </h2>
-            <dl className="mt-4 space-y-3 text-sm">
-              <div className="flex items-center justify-between gap-4">
-                <dt className="text-muted-foreground">Reference</dt>
-                <dd className="font-mono text-xs">{order.reference}</dd>
+        <aside className="@container min-w-0 space-y-4">
+          <section className="overflow-hidden rounded-[calc(var(--radius-xl)+var(--spacing))] border border-border/60 bg-card shadow-xs">
+            <div className="flex items-center justify-between gap-3 border-b border-border/60 bg-muted/20 px-4 py-3">
+              <h2 className="text-sm font-medium">Order information</h2>
+              <OrderStatusBadge status={order.status} />
+            </div>
+            <dl className="grid gap-x-6 gap-y-5 px-4 py-5 text-sm @sm:grid-cols-2">
+              <div className="min-w-0">
+                <dt className="text-muted-foreground text-xs">Reference</dt>
+                <dd className="mt-1.5 font-mono text-xs leading-5 font-medium break-all">
+                  {order.reference}
+                </dd>
               </div>
-              <div className="flex items-center justify-between gap-4">
-                <dt className="text-muted-foreground">Order ID</dt>
-                <dd className="font-mono text-xs">{order.id}</dd>
+              <div className="min-w-0">
+                <dt className="text-muted-foreground text-xs">Placed</dt>
+                <dd className="mt-1.5 text-sm leading-5 tabular-nums">
+                  {formatDateTime(order.createdAt)}
+                </dd>
               </div>
-              <div className="flex items-center justify-between gap-4">
-                <dt className="text-muted-foreground">Placed</dt>
-                <dd>{formatDateTime(order.createdAt)}</dd>
-              </div>
-              <div className="flex items-center justify-between gap-4">
-                <dt className="text-muted-foreground">Status</dt>
-                <dd>
-                  <OrderStatusBadge status={order.status} />
+              <div className="min-w-0 @sm:col-span-2">
+                <dt className="text-muted-foreground text-xs">Order ID</dt>
+                <dd className="mt-1.5 font-mono text-xs leading-5 break-all">
+                  {order.id}
                 </dd>
               </div>
             </dl>
+            <div className="border-t border-border/60 bg-muted/20 px-4 py-3">
+              <dl className="grid grid-cols-2 gap-4 text-xs">
+                <div className="flex items-baseline gap-2">
+                  <dt className="text-muted-foreground">Line items</dt>
+                  <dd className="font-medium tabular-nums">
+                    {order.items.length}
+                  </dd>
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <dt className="text-muted-foreground">Units</dt>
+                  <dd className="font-medium tabular-nums">
+                    {order.items.reduce((sum, item) => sum + item.quantity, 0)}
+                  </dd>
+                </div>
+              </dl>
+            </div>
           </section>
-          <section>
-            <h2 className="border-b pb-2 text-sm font-medium">Summary</h2>
-            <dl className="mt-4 space-y-3 text-sm">
-              <div className="flex items-center justify-between">
-                <dt className="text-muted-foreground">Line items</dt>
-                <dd className="tabular-nums">{order.items.length}</dd>
-              </div>
-              <div className="flex items-center justify-between">
-                <dt className="text-muted-foreground">Units</dt>
-                <dd className="tabular-nums">
-                  {order.items.reduce((sum, item) => sum + item.quantity, 0)}
-                </dd>
-              </div>
-            </dl>
-          </section>
-          <p className="text-muted-foreground flex items-center gap-2 text-xs">
-            <IconClipboardList className="size-3.5" />
+          <p className="text-muted-foreground flex items-start gap-2 text-xs">
+            <IconClipboardList className="mt-px size-3.5 shrink-0" />
             Statuses can move from placed to packed to shipped.
           </p>
         </aside>
