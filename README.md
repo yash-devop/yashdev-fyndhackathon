@@ -4,14 +4,12 @@ Commerce Order Console is a full-stack order management app built for the Fynd H
 
 ## Screenshots
 
-> TODO: Add real UI screenshots here. No screenshot assets are currently tracked in the repository.
-
-| Screen            | Screenshot |
-| ----------------- | ---------- |
-| Product catalogue | TODO       |
-| Create order      | TODO       |
-| Orders list       | TODO       |
-| Order detail      | TODO       |
+| Screen            | Screenshot                                         |
+| ----------------- | -------------------------------------------------- |
+| Product catalogue | ![Product catalogue](apps/web/public/products.jpg) |
+| Create order      | ![Create order](apps/web/public/create-order.jpg)  |
+| Orders list       | ![Orders list](apps/web/public/orders.jpg)         |
+| Order detail      | ![Order detail](apps/web/public/order-details.jpg) |
 
 ## Features
 
