@@ -26,8 +26,8 @@ export function AppSidebar() {
       <AppSidebarHeader />
       <SidebarContent className="mt-1.5 px-0 mx-0 gap-1">
         <SidebarGroup className="gap-1">
-          <SidebarGroupLabel className="text-muted-foreground font-light text-[11px]">
-            CATALOGUE
+          <SidebarGroupLabel className="text-muted-foreground font-light text-[11px] uppercase">
+            Catalogue
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -38,7 +38,7 @@ export function AppSidebar() {
                     isActive={pathname === href}
                     tooltip={title}
                     className={cn(
-                      "text-[13px] select-none",
+                      "text-[13px] select-none h-9",
                       pathname === href
                         ? "text-sidebar-accent-foreground"
                         : "text-muted-foreground",

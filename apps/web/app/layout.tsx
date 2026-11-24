@@ -20,7 +20,7 @@ const interMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "yash-fynd",
-  description: "yash-fynd monorepo starter",
+  description: "yash-fynd hackathon project called Commerce console",
 };
 
 export default function RootLayout({
