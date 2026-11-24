@@ -35,7 +35,7 @@ function ProductRow({ product }: { product: Product }) {
   return (
     <RecordTableRow>
       <div role="cell" className="flex min-w-0 items-center gap-3 pr-9 md:pr-0">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-border/60 bg-white text-muted-foreground">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-border/60 bg-muted text-muted-foreground">
           <IconPackage className="size-5" stroke={1.75} aria-hidden="true" />
         </span>
         <div className="min-w-0">
