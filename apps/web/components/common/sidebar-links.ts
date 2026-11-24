@@ -1,6 +1,5 @@
 import {
   IconClipboardList,
-  IconFileDescription,
   IconPackage,
   IconPlus,
   type Icon as TablerIcon,
@@ -27,10 +26,5 @@ export const sidebarLinks: SidebarLink[] = [
     title: "Create Order",
     href: "/orders/new",
     icon: IconPlus,
-  },
-  {
-    title: "Order Details",
-    href: "/orders/ORD-DEMO",
-    icon: IconFileDescription,
   },
 ];
