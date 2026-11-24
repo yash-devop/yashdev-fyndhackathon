@@ -5,7 +5,7 @@ import { CreateOrderInput, createOrderSchema } from "@repo/schemas";
 import { useForm } from "react-hook-form";
 import { useCreateOrder } from "./use-create-order";
 
-export function useOrderForm() {
+export function useOrderForm(onSuccess?: () => void) {
   const createOrder = useCreateOrder();
 
   const form = useForm<CreateOrderInput>({
@@ -13,7 +13,10 @@ export function useOrderForm() {
     defaultValues: { items: [] },
   });
 
-  const onSubmit = form.handleSubmit((input) => createOrder.mutateAsync(input));
+  const onSubmit = form.handleSubmit(async (input) => {
+    await createOrder.mutateAsync(input);
+    onSuccess?.();
+  });
 
   return {
     form,

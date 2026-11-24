@@ -1,3 +1,13 @@
-export default function OrderDetailsPage() {
-  return <h1 className="text-2xl font-semibold">Order Details</h1>;
+import { OrderDetailsView } from "@/components/orders/order-details-view";
+
+type OrderDetailsPageProps = {
+  params: Promise<{ id: string }>;
+};
+
+export default async function OrderDetailsPage({
+  params,
+}: OrderDetailsPageProps) {
+  const { id } = await params;
+
+  return <OrderDetailsView id={id} />;
 }
